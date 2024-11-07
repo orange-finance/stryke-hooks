@@ -13,7 +13,7 @@ contract UtilizationLimitHooks is IV2Hooks, OwnableUpgradeable, UUPSUpgradeable 
     error UtilizationLimitHooks__InvalidUtilizationLimit(uint256 limit);
 
     uint256 internal constant MAX_UTILIZATION_RATE = 1e36;
-    uint256 public utilizationLimit = MAX_UTILIZATION_RATE;
+    uint256 public utilizationLimit;
 
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() {
@@ -25,6 +25,7 @@ contract UtilizationLimitHooks is IV2Hooks, OwnableUpgradeable, UUPSUpgradeable 
 
     function initialize() external initializer {
         __Ownable_init(msg.sender);
+        utilizationLimit = MAX_UTILIZATION_RATE;
     }
 
     function setUtilizationLimit(uint256 newLimit) external onlyOwner {
