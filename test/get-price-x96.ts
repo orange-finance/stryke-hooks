@@ -17,7 +17,7 @@ function sqrt(n: bigint): bigint {
   return x;
 }
 
-const amount0 = Deno.args[0];
-const amount1 = Deno.args[1];
+const amount0 = process.argv[2];
+const amount1 = process.argv[3];
 
 console.log(encodePriceX96(BigInt(Number(amount0)), BigInt(Number(amount1))));

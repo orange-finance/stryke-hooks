@@ -10,7 +10,7 @@ contract UtilizationLimitHooks is IV2Hooks {
     error UtilizationLimitHooks__UtilizationLimitExceeded(uint256 expected, uint256 actual);
     error UtilizationLimitHooks__InvalidUtilizationLimit(uint256 limit);
 
-    uint256 constant MAX_UTILIZATION_RATE = 1e36;
+    uint256 internal constant MAX_UTILIZATION_RATE = 1e36;
     uint256 public utilizationLimit = MAX_UTILIZATION_RATE;
 
     function setUtilizationLimit(uint256 newLimit) external {

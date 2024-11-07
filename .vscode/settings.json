@@ -2,6 +2,5 @@
   "[solidity]": {
     "editor.defaultFormatter": "NomicFoundation.hardhat-solidity"
   },
-  "cSpell.words": ["IERC", "keccak", "solhint", "struct", "stryke"],
-  "deno.enable": true
+  "cSpell.words": ["IERC", "keccak", "solhint", "struct", "stryke"]
 }

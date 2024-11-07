@@ -6,10 +6,9 @@ pragma solidity 0.8.27;
 
 import {Test} from "forge-std/Test.sol";
 import {UtilizationLimitHooks} from "../../src/UtilizationLimitHooks.sol";
-import {IV2Handler, TokenIdInfo} from "../../src/IV2Handler.sol";
+import {TokenIdInfo} from "../../src/IV2Handler.sol";
 import {IUniswapV3Pool} from "v3-core/interfaces/IUniswapV3Pool.sol";
 import {IUniswapV3Factory} from "v3-core/interfaces/IUniswapV3Factory.sol";
-import {OracleLibrary} from "v3-periphery/libraries/OracleLibrary.sol";
 import {Math} from "openzeppelin-contracts/contracts/utils/math/Math.sol";
 import {IERC20} from "forge-std/interfaces/IERC20.sol";
 import {UniswapV3Library} from "../library/UniswapV3Library.sol";

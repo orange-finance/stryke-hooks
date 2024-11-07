@@ -1,0 +1,32 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: corepack enable
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "pnpm"
+      - run: pnpm install
+      - run: pnpm lint
+      - run: pnpm format
+  test:
+    needs: lint
+    uses: orange-finance/workflows/.github/workflows/forge-test.yml@main
+
+  coverage:
+    needs: test
+    uses: orange-finance/workflows/.github/workflows/forge-coverage.yml@main
+    with:
+      match-path: '"test/{unit,integration}/**/*.sol"'
+    secrets:
+      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
