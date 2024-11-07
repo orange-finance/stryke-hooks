@@ -123,6 +123,11 @@ contract UtilizationLimitHooksTest is Test {
         hooks.setUtilizationLimit(0.5e36);
     }
 
+    function test_RevertWhen_NotImplemented() public {
+        vm.expectRevert(abi.encodeWithSelector(UtilizationLimitHooks.UtilizationLimitHooks__NotImplemented.selector));
+        hooks.onPositionUnUse("");
+    }
+
     function mint(
         int24 tickLower,
         int24 tickUpper,
