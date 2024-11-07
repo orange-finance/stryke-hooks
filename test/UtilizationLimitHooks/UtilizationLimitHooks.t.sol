@@ -10,6 +10,7 @@ import {TokenIdInfo} from "../../src/IV2Handler.sol";
 import {IUniswapV3Pool} from "v3-core/interfaces/IUniswapV3Pool.sol";
 import {IUniswapV3Factory} from "v3-core/interfaces/IUniswapV3Factory.sol";
 import {Math} from "openzeppelin-contracts/contracts/utils/math/Math.sol";
+import {Ownable} from "openzeppelin-contracts/contracts/access/Ownable.sol";
 import {IERC20} from "forge-std/interfaces/IERC20.sol";
 import {UniswapV3Library} from "../library/UniswapV3Library.sol";
 import {StrykeHandlerV2Library, MintPositionParams, UsePositionParams, ReserveLiquidityParams} from "../library/StrykeHandlerV2Library.sol";
@@ -114,6 +115,12 @@ contract UtilizationLimitHooksTest is Test {
             )
         );
         hooks.setUtilizationLimit(1e36 + 1);
+    }
+
+    function test_RevertWhen_NotOwner() public {
+        vm.expectRevert(abi.encodeWithSelector(Ownable.OwnableUnauthorizedAccount.selector, alice));
+        vm.prank(alice);
+        hooks.setUtilizationLimit(0.5e36);
     }
 
     function mint(
