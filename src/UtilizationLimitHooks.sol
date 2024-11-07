@@ -4,7 +4,6 @@ pragma solidity 0.8.27;
 import {IV2Hooks} from "./IV2Hooks.sol";
 import {IV2Handler, TokenIdInfo, PositionUseData} from "./IV2Handler.sol";
 import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
-import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {UUPSUpgradeable} from "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 
@@ -21,6 +20,7 @@ contract UtilizationLimitHooks is IV2Hooks, OwnableUpgradeable, UUPSUpgradeable 
         _disableInitializers();
     }
 
+    // solhint-disable-next-line no-empty-blocks
     function _authorizeUpgrade(address) internal override onlyOwner {}
 
     function initialize() external initializer {

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-/* solhint-disable no-inline-assembly */
+/* solhint-disable no-inline-assembly, one-contract-per-file */
 
 pragma solidity 0.8.27;
 
@@ -147,13 +147,10 @@ contract UtilizationLimitHooksTest is Test {
             address(new MockUtilizationLimitHooksV2()),
             abi.encodeCall(MockUtilizationLimitHooksV2.initializeV2, (100))
         );
-
         assertEq(MockUtilizationLimitHooksV2(address(hooks)).newVariable(), 100);
-
         test_RevertWhen_utilizationLimitExceeded();
         test_RevertWhen_InvalidUtilizationLimit();
         test_RevertWhen_NotImplemented();
-
         vm.expectRevert(Initializable.InvalidInitialization.selector);
         MockUtilizationLimitHooksV2(address(hooks)).initializeV2(100);
     }
