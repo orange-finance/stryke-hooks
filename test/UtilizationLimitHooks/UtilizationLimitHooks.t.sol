@@ -9,11 +9,13 @@ import {UtilizationLimitHooks} from "../../src/UtilizationLimitHooks.sol";
 import {TokenIdInfo} from "../../src/IV2Handler.sol";
 import {IUniswapV3Pool} from "v3-core/interfaces/IUniswapV3Pool.sol";
 import {IUniswapV3Factory} from "v3-core/interfaces/IUniswapV3Factory.sol";
-import {Math} from "openzeppelin-contracts/contracts/utils/math/Math.sol";
-import {Ownable} from "openzeppelin-contracts/contracts/access/Ownable.sol";
+import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
+import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {IERC20} from "forge-std/interfaces/IERC20.sol";
 import {UniswapV3Library} from "../library/UniswapV3Library.sol";
 import {StrykeHandlerV2Library, MintPositionParams, UsePositionParams, ReserveLiquidityParams} from "../library/StrykeHandlerV2Library.sol";
+import {ERC1967Proxy} from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
+import {Initializable} from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 
 contract UtilizationLimitHooksTest is Test {
     using UniswapV3Library for address;
@@ -35,7 +37,14 @@ contract UtilizationLimitHooksTest is Test {
     address internal carol = makeAddr("carol");
 
     function setUp() public {
-        hooks = new UtilizationLimitHooks();
+        hooks = UtilizationLimitHooks(
+            address(
+                new ERC1967Proxy(
+                    address(new UtilizationLimitHooks()),
+                    abi.encodeCall(UtilizationLimitHooks.initialize, ())
+                )
+            )
+        );
         uniswapV3Factory = deployV3Factory();
         uniswapV3Router = deployV3Router(uniswapV3Factory, address(0));
         strykePositionManager = deployPositionManager();
@@ -126,6 +135,27 @@ contract UtilizationLimitHooksTest is Test {
     function test_RevertWhen_NotImplemented() public {
         vm.expectRevert(abi.encodeWithSelector(UtilizationLimitHooks.UtilizationLimitHooks__NotImplemented.selector));
         hooks.onPositionUnUse("");
+    }
+
+    function test_RevertWhen_Reinitialize() public {
+        vm.expectRevert(Initializable.InvalidInitialization.selector);
+        hooks.initialize();
+    }
+
+    function test_Upgrade() public {
+        hooks.upgradeToAndCall(
+            address(new MockUtilizationLimitHooksV2()),
+            abi.encodeCall(MockUtilizationLimitHooksV2.initializeV2, (100))
+        );
+
+        assertEq(MockUtilizationLimitHooksV2(address(hooks)).newVariable(), 100);
+
+        test_RevertWhen_utilizationLimitExceeded();
+        test_RevertWhen_InvalidUtilizationLimit();
+        test_RevertWhen_NotImplemented();
+
+        vm.expectRevert(Initializable.InvalidInitialization.selector);
+        MockUtilizationLimitHooksV2(address(hooks)).initializeV2(100);
     }
 
     function mint(
@@ -239,5 +269,13 @@ contract UtilizationLimitHooksTest is Test {
         assembly {
             positionManager := create(0, add(bytecode, 0x20), mload(bytecode))
         }
+    }
+}
+
+contract MockUtilizationLimitHooksV2 is UtilizationLimitHooks {
+    uint256 public newVariable;
+
+    function initializeV2(uint256 value) external reinitializer(2) {
+        newVariable = value;
     }
 }

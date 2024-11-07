@@ -5,14 +5,27 @@ import {IV2Hooks} from "./IV2Hooks.sol";
 import {IV2Handler, TokenIdInfo, PositionUseData} from "./IV2Handler.sol";
 import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
+import {UUPSUpgradeable} from "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
+import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 
-contract UtilizationLimitHooks is IV2Hooks, Ownable(msg.sender) {
+contract UtilizationLimitHooks is IV2Hooks, OwnableUpgradeable, UUPSUpgradeable {
     error UtilizationLimitHooks__NotImplemented();
     error UtilizationLimitHooks__UtilizationLimitExceeded(uint256 expected, uint256 actual);
     error UtilizationLimitHooks__InvalidUtilizationLimit(uint256 limit);
 
     uint256 internal constant MAX_UTILIZATION_RATE = 1e36;
     uint256 public utilizationLimit = MAX_UTILIZATION_RATE;
+
+    /// @custom:oz-upgrades-unsafe-allow constructor
+    constructor() {
+        _disableInitializers();
+    }
+
+    function _authorizeUpgrade(address) internal override onlyOwner {}
+
+    function initialize() external initializer {
+        __Ownable_init(msg.sender);
+    }
 
     function setUtilizationLimit(uint256 newLimit) external onlyOwner {
         require(newLimit <= MAX_UTILIZATION_RATE, UtilizationLimitHooks__InvalidUtilizationLimit(newLimit));

@@ -2,5 +2,14 @@
   "[solidity]": {
     "editor.defaultFormatter": "NomicFoundation.hardhat-solidity"
   },
-  "cSpell.words": ["IERC", "keccak", "solhint", "struct", "stryke"]
+  "cSpell.words": [
+    "IERC",
+    "Initializable",
+    "keccak",
+    "reinitializer",
+    "solhint",
+    "struct",
+    "stryke",
+    "UUPS"
+  ]
 }
